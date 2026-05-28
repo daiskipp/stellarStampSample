@@ -164,6 +164,12 @@ UI 上部 `#net` パネルが `rpc https://soroban-testnet.stellar.org` /
 [`apps/*/.env.production.example`](../../../apps/staff-app/.env.production.example)
 を参照。
 
+> **contract ids (5 行) + `VITE_DEPLOYER_ADDRESS` は手動で触らないでください。**
+> `scripts/deploy-testnet.sh` の末尾で `apps/{customer,staff}-app/.env.production`
+> を自動同期します (HQ 7 行と `VITE_RP_ID` は touch しない設計)。手動で
+> 古い値を残すと issue() が `UnreachableCodeReached` で trap します
+> (新 HQ が古い contract の admin でないため)。
+
 ---
 
 ## Step 5: CF Pages へ 2 回目デプロイ (env 反映)

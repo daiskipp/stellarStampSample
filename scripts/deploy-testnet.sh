@@ -180,6 +180,41 @@ sed 's|^VITE_RP_ID=.*|VITE_RP_ID=dicekey-coffee-stamps.pages.dev|' "$ENV_FILE" \
   > tools/sa-harness/.env.production
 echo "Mirrored ${ENV_FILE} -> tools/sa-harness/.env.production (rpId overridden to dicekey-coffee-stamps.pages.dev)"
 
+# 🔴 Sync the 6 deploy-coupled keys (5 contract ids + deployer G-address) into
+#    apps/{customer,staff}-app/.env.production. Without this, a fresh
+#    deploy-testnet leaves apps pointing at the previous run's contracts —
+#    staff-app's issue() trap "UnreachableCodeReached" because the new HQ is
+#    not admin of the old visit-stamps. HQ 7-key block (`VITE_HQ_*`) stays
+#    manual via the harness /setup/ Step-4 copy; rpId stays at the per-app
+#    fixed pages.dev value. Contract ids are uppercase base32 (A-Z, 2-7) so
+#    `|` is a safe sed delimiter.
+sync_apps_contract_ids() {
+  local target="$1"
+  if [ ! -f "$target" ]; then
+    echo "Skipping ${target} (does not exist — copy from .env.production.example first)"
+    return 0
+  fi
+  for key in \
+    VITE_VISIT_STAMPS_CONTRACT \
+    VITE_BEANS_TOKEN_CONTRACT \
+    VITE_BENEFITS_CONTRACT \
+    VITE_BADGES_CONTRACT \
+    VITE_REWARD_POLICY_CONTRACT \
+    VITE_DEPLOYER_ADDRESS
+  do
+    value=$(grep "^${key}=" "$ENV_FILE" | head -1 | cut -d= -f2-)
+    [ -z "$value" ] && continue
+    if grep -q "^${key}=" "$target"; then
+      sed -i "s|^${key}=.*|${key}=${value}|" "$target"
+    else
+      echo "${key}=${value}" >> "$target"
+    fi
+  done
+  echo "Synced 6 deploy keys -> ${target} (HQ_* + RP_ID untouched)"
+}
+sync_apps_contract_ids apps/customer-app/.env.production
+sync_apps_contract_ids apps/staff-app/.env.production
+
 echo ""
 echo "Contract IDs saved to ${ENV_FILE}"
 echo ""
