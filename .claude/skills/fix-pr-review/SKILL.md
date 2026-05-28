@@ -25,7 +25,7 @@ works for any reviewer's inline comments.
 - Resolve `owner/name` via `gh repo view --json nameWithOwner`.
 
 ### 2. Fetch the latest review
-- Inline comments: `gh api repos/<owner>/<name>/pulls/<n>/comments --jq 'sort_by(.created_at) | .[] | {user: .user.login, path, line: (.line // .original_line), body, created_at, commit: .commit_id}'`
+- Inline comments — pass `--paginate` (the endpoint returns only 30 per page, so a PR with >30 inline comments would silently drop the rest and step 3 could wrongly terminate): `gh api --paginate repos/<owner>/<name>/pulls/<n>/comments --jq 'sort_by(.created_at) | .[] | {user: .user.login, path, line: (.line // .original_line), body, created_at, commit: .commit_id}'`
 - Review summaries / states: `gh pr view <n> --json reviews`
 - Issue-level comments (your prior `@codex review` replies): `gh pr view <n> --json comments`
 
