@@ -190,9 +190,23 @@ echo "Mirrored ${ENV_FILE} -> tools/sa-harness/.env.production (rpId overridden 
 #    `|` is a safe sed delimiter.
 sync_apps_contract_ids() {
   local target="$1"
+  local example="${target}.example"
+  # 🔴 Clean checkouts have no .env.production (gitignored). Seed from the
+  #    committed .env.production.example BEFORE syncing, so the contract ids
+  #    land on real values instead of the example's "<set after just testnet>"
+  #    placeholders. Skipping here (the previous behaviour) meant a later
+  #    manual `cp` re-introduced stale placeholders that the docs say not to
+  #    hand-edit, and the next `just pages` could target the wrong contracts.
+  #    VITE_RP_ID (<your-host>.pages.dev) + VITE_HQ_* stay placeholders for the
+  #    operator (RP_ID once per host; HQ via the /setup/ Step-4 copy).
   if [ ! -f "$target" ]; then
-    echo "Skipping ${target} (does not exist — copy from .env.production.example first)"
-    return 0
+    if [ -f "$example" ]; then
+      cp "$example" "$target"
+      echo "Seeded ${target} from ${example} — set VITE_RP_ID + VITE_HQ_* manually"
+    else
+      echo "WARN: ${target} and ${example} both missing — skipping app env sync" >&2
+      return 0
+    fi
   fi
   for key in \
     VITE_VISIT_STAMPS_CONTRACT \
