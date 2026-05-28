@@ -205,7 +205,10 @@ pnpm test:e2e                   # globalSetup runs the one-shot pipeline; 2 spec
   long gap. Contract TTL also expires after ~24 days of inactivity;
   `stellar contract extend` before demos. CF Pages deployment uses
   `apps/*/.env.production` (template at `*.env.production.example`); the
-  RP_ID there must match the deployed host.
+  RP_ID there must match the deployed host. `deploy-testnet.sh` auto-syncs
+  the 5 contract ids + `VITE_DEPLOYER_ADDRESS` into `apps/*/.env.production`
+  (and full mirror into `tools/sa-harness/.env.production` with rpId
+  override) — `VITE_HQ_*` keys stay manual via the `/setup/` Step-4 copy.
 - **HQ root passkey lives only on its creating authenticator AND its creating
   rpId.** Sign-in from a different device / browser is impossible (WebAuthn
   secret stays in the secure enclave), AND a passkey minted with rpId=A is
