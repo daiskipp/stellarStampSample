@@ -20,7 +20,8 @@ works for any reviewer's inline comments.
 ## Procedure
 
 ### 1. Identify the PR
-- If a PR number was given, use it. Otherwise `gh pr view --json number,headRefName,url`; if no PR exists for the current branch, stop and tell the user.
+- If a PR number was given, still fetch its head branch: `gh pr view <n> --json number,headRefName,url`. Compare `headRefName` against the local branch (`git rev-parse --abbrev-ref HEAD`); if they differ, STOP and tell the user (or check out the PR branch first) — otherwise step 3's HEAD comparison misclassifies findings as stale and step 7 pushes fixes to the wrong branch.
+- If no PR number was given, resolve it from the current branch: `gh pr view --json number,headRefName,url`; if no PR exists for the current branch, stop and tell the user.
 - Resolve `owner/name` via `gh repo view --json nameWithOwner`.
 
 ### 2. Fetch the latest review
