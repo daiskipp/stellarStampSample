@@ -35,6 +35,11 @@ NETWORK="testnet"
 SOURCE="dicekey-admin"
 WASM_DIR="target/wasm32v1-none/release"
 ENV_FILE=".env.testnet"
+# 🔴 CF Pages host. apps + harness production builds must all use this as the
+#    WebAuthn rpId so one passkey realm spans /, /staff/, /setup/ (pages.dev is
+#    on the Public Suffix List → no subdomain sharing). Single source of truth;
+#    change here if the Pages project is renamed.
+PAGES_HOST="dicekey-coffee-stamps.pages.dev"
 
 echo "=== dicekey Coffee Stamps - Testnet Deploy ==="
 
@@ -176,9 +181,9 @@ echo "Mirrored ${ENV_FILE} -> tools/sa-harness/.env.testnet"
 #    setup and staff MUST live on the same origin. localhost / CDP smoke
 #    stays on .env.testnet (rpId=localhost) above; only the production build
 #    flips the rpId.
-sed 's|^VITE_RP_ID=.*|VITE_RP_ID=dicekey-coffee-stamps.pages.dev|' "$ENV_FILE" \
+sed "s|^VITE_RP_ID=.*|VITE_RP_ID=${PAGES_HOST}|" "$ENV_FILE" \
   > tools/sa-harness/.env.production
-echo "Mirrored ${ENV_FILE} -> tools/sa-harness/.env.production (rpId overridden to dicekey-coffee-stamps.pages.dev)"
+echo "Mirrored ${ENV_FILE} -> tools/sa-harness/.env.production (rpId overridden to ${PAGES_HOST})"
 
 # 🔴 Sync the 6 deploy-coupled keys (5 contract ids + deployer G-address) into
 #    apps/{customer,staff}-app/.env.production. Without this, a fresh
@@ -191,18 +196,17 @@ echo "Mirrored ${ENV_FILE} -> tools/sa-harness/.env.production (rpId overridden 
 sync_apps_contract_ids() {
   local target="$1"
   local example="${target}.example"
+  local seeded=0
   # 🔴 Clean checkouts have no .env.production (gitignored). Seed from the
   #    committed .env.production.example BEFORE syncing, so the contract ids
   #    land on real values instead of the example's "<set after just testnet>"
-  #    placeholders. Skipping here (the previous behaviour) meant a later
-  #    manual `cp` re-introduced stale placeholders that the docs say not to
+  #    placeholders. Skipping (the original behaviour) meant a later manual
+  #    `cp` re-introduced stale placeholders that the docs say not to
   #    hand-edit, and the next `just pages` could target the wrong contracts.
-  #    VITE_RP_ID (<your-host>.pages.dev) + VITE_HQ_* stay placeholders for the
-  #    operator (RP_ID once per host; HQ via the /setup/ Step-4 copy).
   if [ ! -f "$target" ]; then
     if [ -f "$example" ]; then
       cp "$example" "$target"
-      echo "Seeded ${target} from ${example} — set VITE_RP_ID + VITE_HQ_* manually"
+      seeded=1
     else
       echo "WARN: ${target} and ${example} both missing — skipping app env sync" >&2
       return 0
@@ -224,7 +228,17 @@ sync_apps_contract_ids() {
       echo "${key}=${value}" >> "$target"
     fi
   done
-  echo "Synced 6 deploy keys -> ${target} (HQ_* + RP_ID untouched)"
+  # 🔴 On a freshly SEEDED file, replace the example's placeholder
+  #    VITE_RP_ID=<your-host>.pages.dev with the real Pages host, otherwise
+  #    build-pages bundles an invalid WebAuthn rpId and staff sign-in fails on
+  #    https://${PAGES_HOST}/staff/. An EXISTING target is left untouched — the
+  #    operator may have deliberately chosen a different host. VITE_HQ_* always
+  #    stays manual (filled via the /setup/ Step-4 copy).
+  if [ "$seeded" -eq 1 ]; then
+    sed -i "s|^VITE_RP_ID=.*|VITE_RP_ID=${PAGES_HOST}|" "$target"
+    echo "Seeded ${target} from ${example} (RP_ID=${PAGES_HOST}; fill VITE_HQ_* via /setup/)"
+  fi
+  echo "Synced 6 deploy keys -> ${target}"
 }
 sync_apps_contract_ids apps/customer-app/.env.production
 sync_apps_contract_ids apps/staff-app/.env.production
