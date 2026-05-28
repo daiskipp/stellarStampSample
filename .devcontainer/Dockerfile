@@ -44,6 +44,23 @@ RUN set -eux; \
       | RTK_INSTALL_DIR=/usr/local/bin RTK_VERSION="${RTK_VERSION}" sh; \
     rtk --version
 
+# 🔵 Intent: GitHub CLI (gh) for PR creation / issue management from inside the
+#   container (gh pr create, gh api, etc.). Pinned via GH_VERSION for
+#   reproducible rebuilds; tarball install to /usr/local/bin matches just/rtk.
+#   gh auth still needs `gh auth login` once per user after a rebuild.
+ARG GH_VERSION=2.93.0
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+      amd64) gh_arch="amd64" ;; \
+      arm64) gh_arch="arm64" ;; \
+      *) echo "Unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac; \
+    curl -fsSLO "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${gh_arch}.tar.gz"; \
+    tar -xzf "gh_${GH_VERSION}_linux_${gh_arch}.tar.gz" -C /tmp; \
+    mv "/tmp/gh_${GH_VERSION}_linux_${gh_arch}/bin/gh" /usr/local/bin/gh; \
+    rm -rf "gh_${GH_VERSION}_linux_${gh_arch}.tar.gz" "/tmp/gh_${GH_VERSION}_linux_${gh_arch}"; \
+    gh --version
+
 # 🔵 Intent: Playwright chromium + its Linux system deps, pinned to the
 #   workspace's @playwright/test version. Browser binary is installed to
 #   PLAYWRIGHT_BROWSERS_PATH (chowned to vscode so user-side `playwright
