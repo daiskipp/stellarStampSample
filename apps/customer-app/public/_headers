@@ -1,0 +1,9 @@
+# Cloudflare Pages response headers.
+# Phase 1 demo posture: enable conservative defense-in-depth headers without a
+# strict CSP (a misconfigured CSP would silently break WebAuthn / Google Fonts
+# / Soroban RPC for end-users on the public host). Phase 2 should add CSP once
+# the third-party origin set is frozen.
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

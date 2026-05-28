@@ -1,0 +1,4 @@
+# Cloudflare Pages SPA fallback.
+# react-router-dom owns every path under /; unknown paths must serve index.html
+# so the client-side router can resolve them instead of CF Pages returning 404.
+/*  /index.html  200

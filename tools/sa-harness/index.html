@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>dicekey HQ Setup</title>
+    <style>
+      :root {
+        --bg: #fafaf7;
+        --fg: #1a1a1a;
+        --muted: #666;
+        --line: #ddd;
+        --accent: #1a1a1a;
+        --bad: #c0392b;
+        --good: #1f7a37;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--fg);
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 32px 24px;
+        line-height: 1.5;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 4px;
+      }
+      .sub {
+        color: var(--muted);
+        font-size: 13px;
+        margin-bottom: 24px;
+      }
+      .net {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        color: var(--muted);
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin-bottom: 24px;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .step {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+      }
+      .step h2 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0 0 12px;
+        letter-spacing: 0.02em;
+      }
+      .step h2 .num {
+        color: var(--muted);
+        font-weight: 400;
+        margin-right: 6px;
+      }
+      label {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 8px 0 4px;
+      }
+      input[type="text"] {
+        width: 100%;
+        padding: 8px 10px;
+        font-size: 13px;
+        border: 1px solid var(--line);
+        border-radius: 4px;
+        background: #fff;
+        font-family: inherit;
+        box-sizing: border-box;
+      }
+      button {
+        margin-top: 12px;
+        padding: 8px 16px;
+        font-size: 13px;
+        font-weight: 600;
+        background: var(--accent);
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      button:disabled {
+        background: #bbb;
+        cursor: not-allowed;
+      }
+      button.secondary {
+        background: #fff;
+        color: var(--fg);
+        border: 1px solid var(--line);
+      }
+      .result {
+        margin-top: 10px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        color: var(--muted);
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+      .result.ok {
+        color: var(--good);
+      }
+      .result.err {
+        color: var(--bad);
+      }
+      pre.envblock {
+        background: #1a1a1a;
+        color: #f5f5f5;
+        border-radius: 6px;
+        padding: 12px;
+        font-size: 12px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        overflow-x: auto;
+        white-space: pre;
+        margin: 8px 0;
+      }
+      details {
+        margin-top: 32px;
+      }
+      summary {
+        cursor: pointer;
+        font-size: 12px;
+        color: var(--muted);
+      }
+      pre#log {
+        background: #fff;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 12px;
+        font-size: 11px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        white-space: pre-wrap;
+        word-break: break-all;
+        max-height: 360px;
+        overflow-y: auto;
+      }
+      .locked-banner {
+        background: #fef3c7;
+        border: 1px solid #d97706;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-bottom: 24px;
+        font-size: 13px;
+        color: #78350f;
+      }
+      .locked-banner strong {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>dicekey HQ Setup</h1>
+    <p class="sub">
+      本部 Smart Account とスタッフルールの初期セットアップを、本ブラウザの
+      passkey (Touch ID / Windows Hello / DevTools Virtual Authenticator)
+      で行います。コントラクトのデプロイは <code>scripts/deploy-localnet.sh</code> /
+      <code>scripts/deploy-testnet.sh</code> で先に済ませてください。
+    </p>
+
+    <div class="net" id="net">loading config…</div>
+
+    <div class="locked-banner" id="hqLockedBanner" hidden>
+      <strong>⚠️ HQ はすでに設定されています</strong>
+      <code>VITE_HQ_SMART_ACCOUNT</code> に値が入っているため、Step 1-3 は
+      無効化されています。HQ を作り直す場合は <code>scripts/deploy-testnet.sh</code>
+      を再走させて 5 dicekey contracts ごと fresh redeploy してください
+      (旧 HQ は孤児化します)。
+    </div>
+
+    <section class="step">
+      <h2><span class="num">1.</span>HQ Smart Account を作成</h2>
+      <label for="hqAppName">アプリ表示名</label>
+      <input id="hqAppName" type="text" value="dicekey HQ" />
+      <label for="hqUserName">ユーザー名 (passkey の displayName)</label>
+      <input id="hqUserName" type="text" value="hq-admin" />
+      <button id="btnCreateHq">Create HQ Wallet</button>
+      <div class="result" id="resultHq"></div>
+    </section>
+
+    <section class="step">
+      <h2><span class="num">2.</span>5 コントラクトを initialize + admin wire</h2>
+      <p class="sub" style="margin: 0 0 8px">
+        visit-stamps / beans-token / benefits / badges / reward-policy を Step 1
+        の HQ を admin として初期化し、visit-stamps と reward-policy 間の参照
+        も設定します。
+      </p>
+      <button id="btnInitWire" disabled>Initialize + Wire</button>
+      <div class="result" id="resultInitWire"></div>
+    </section>
+
+    <section class="step">
+      <h2><span class="num">3.</span>スタッフ context rule を作成</h2>
+      <label for="staffAppName">staff app 表示名</label>
+      <input id="staffAppName" type="text" value="dicekey Staff" />
+      <label for="staffUserName">最初のスタッフ名 (このブラウザに passkey 1 つ作られます)</label>
+      <input id="staffUserName" type="text" value="shibuya-tanaka" />
+      <button id="btnStaffRules" disabled>Setup Staff Rules</button>
+      <div class="result" id="resultStaffRules"></div>
+    </section>
+
+    <section class="step">
+      <h2><span class="num">4.</span>.env に書き戻し</h2>
+      <p class="sub" style="margin: 0 0 8px">
+        以下の内容を <code>apps/staff-app/.env</code> と
+        <code>apps/customer-app/.env</code> の該当行に上書きしてください。
+      </p>
+      <pre class="envblock" id="envBlock">— 上のステップを完了すると出力されます —</pre>
+      <button id="btnCopyEnv" class="secondary" disabled>Copy</button>
+      <div class="result" id="resultCopy"></div>
+    </section>
+
+    <details>
+      <summary>raw log (デバッグ用)</summary>
+      <pre id="log">loading…</pre>
+    </details>
+
+    <script type="module" src="/src/harness.ts"></script>
+  </body>
+</html>

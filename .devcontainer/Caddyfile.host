@@ -1,0 +1,28 @@
+{
+	local_certs
+	auto_https disable_redirects
+}
+
+# Run on host Mac: `caddy run --config .devcontainer/Caddyfile.host`
+# Provides HTTPS termination for Stellar localnet RPC (needed for WebAuthn origin).
+# Reverse proxies to localhost:8000 (OrbStack publishes stellar-localnet:8000 to host).
+localhost:8443, 127.0.0.1:8443 {
+	@cors_preflight method OPTIONS
+	handle @cors_preflight {
+		header Access-Control-Allow-Origin "*"
+		header Access-Control-Allow-Methods "GET, POST, OPTIONS"
+		header Access-Control-Allow-Headers "Content-Type, Authorization, x-client-name, x-client-version"
+		header Access-Control-Max-Age "86400"
+		respond 204
+	}
+
+	header Access-Control-Allow-Origin "*"
+	header Access-Control-Expose-Headers "*"
+
+	reverse_proxy http://localhost:8000 {
+		header_down -Access-Control-Allow-Origin
+		header_down -Access-Control-Allow-Methods
+		header_down -Access-Control-Allow-Headers
+		header_down -Access-Control-Expose-Headers
+	}
+}

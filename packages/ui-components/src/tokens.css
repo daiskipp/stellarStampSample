@@ -1,0 +1,42 @@
+/* ───────────────────────────────────────────────────────────────────
+   dicekey Coffee Stamps — Hi-fi design tokens
+   Warm & Editorial × Retro Stamp Card
+   ─────────────────────────────────────────────────────────────────── */
+
+:root {
+  /* Paper palette */
+  --bg:        #f5ede0;
+  --bg-2:      #ebe0cc;
+  --bg-3:      #e1d3b8;
+  --bg-elev:   #fbf6ec;
+
+  /* Ink */
+  --ink:       #2b1a0e;
+  --ink-2:     #5c4530;
+  --ink-3:     #8a7a66;
+  --ink-4:     #c5b699;
+
+  /* Accent — copper */
+  --accent:        #a8632d;
+  --accent-2:      #c2774a;
+  --accent-soft:   #e8c597;
+  --accent-pale:   #f4dfba;
+  --on-accent:     #fbf6ec;
+
+  /* Semantic */
+  --warn:    #c44a3a;
+  --good:    #4d6b3a;
+
+  /* Structure */
+  --line:        rgba(43, 26, 14, 0.14);
+  --line-2:      rgba(43, 26, 14, 0.28);
+  --line-strong: rgba(43, 26, 14, 0.55);
+
+  --shadow-1: 0 1px 1px rgba(43,26,14,.03), 0 2px 6px rgba(43,26,14,.06);
+  --shadow-2: 0 1px 2px rgba(43,26,14,.05), 0 8px 24px rgba(43,26,14,.10);
+
+  /* Type */
+  --f-display: 'DM Serif Display', 'Noto Sans JP', serif;
+  --f-body:    'Noto Sans JP', system-ui, sans-serif;
+  --f-mono:    'JetBrains Mono', 'DM Mono', ui-monospace, monospace;
+}

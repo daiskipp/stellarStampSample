@@ -1,0 +1,17 @@
+# Cloudflare Pages SPA fallback.
+#
+# When this customer-app dist is merged with staff-app dist at /staff/ and
+# sa-harness dist at /setup/ (see scripts/build-pages.sh), CF Pages serves
+# THIS file from the merged root. /staff/* must fall back to
+# /staff/index.html (the staff SPA shell), /setup/* to /setup/index.html
+# (the HQ bootstrap UI), and everything else to /index.html (the customer
+# SPA shell). CF Pages evaluates rules in order, first match wins, so the
+# more-specific staff / setup rules have to come before the catch-all.
+#
+# Solo customer-app deploys (no merge) ignore the /staff/* + /setup/* rules
+# entirely because CF Pages prefers a static file when one exists at the
+# requested path; /staff/foo or /setup/foo with no /staff/ + /setup/ subtree
+# just falls through to the next rule and resolves to /index.html.
+/staff/*  /staff/index.html  200
+/setup/*  /setup/index.html  200
+/*        /index.html        200

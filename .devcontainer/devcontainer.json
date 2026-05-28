@@ -1,0 +1,55 @@
+{
+  "name": "dicekey Coffee Stamps",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/workspaces/StampSample",
+  "remoteUser": "vscode",
+  "features": {
+    "ghcr.io/devcontainers/features/nix:1": {
+      "extraNixConfig": "experimental-features = nix-command flakes"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+  },
+  "forwardPorts": [5173, 5174, 5180, 8000, 8443],
+  "portsAttributes": {
+    "5173": {
+      "label": "Customer App (Vite)"
+    },
+    "5174": {
+      "label": "Staff App (Vite)"
+    },
+    "5180": {
+      "label": "SA Harness / HQ Setup UI (Vite)"
+    },
+    "8000": {
+      "label": "Stellar Localnet"
+    },
+    "8443": {
+      "label": "RPC HTTPS proxy (host browser kit)"
+    }
+  },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
+  },
+  "remoteEnv": {
+    "STAMPSHELL": "devcontainer",
+    "PATH": "/home/vscode/.npm-global/bin:/home/vscode/.local/bin:/home/vscode/.nix-profile/bin:/nix/var/nix/profiles/default/bin:${containerEnv:PATH}",
+    "STELLAR_NETWORK": "stampsample-local",
+    "STELLAR_RPC_URL": "http://stellar-localnet:8000/rpc",
+    "STELLAR_FRIENDBOT_URL": "http://stellar-localnet:8000/friendbot",
+    "STELLAR_NETWORK_PASSPHRASE": "Standalone Network ; February 2017",
+    "PLAYWRIGHT_BROWSERS_PATH": "/opt/ms-playwright"
+  },
+  "postCreateCommand": "bash .devcontainer/setup-all.sh; nix --extra-experimental-features 'nix-command flakes' develop -c echo 'nix shell ok'",
+  "postStartCommand": "bash .devcontainer/setup-all.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "jnoortheen.nix-ide",
+        "rust-lang.rust-analyzer",
+        "biomejs.biome",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}

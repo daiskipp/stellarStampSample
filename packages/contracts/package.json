@@ -1,0 +1,17 @@
+{
+  "name": "@dicekey/contracts",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "tsc -p src/visit-stamps/tsconfig.json && tsc -p src/beans-token/tsconfig.json && tsc -p src/benefits/tsconfig.json && tsc -p src/badges/tsconfig.json && tsc -p src/reward-policy/tsconfig.json"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^15.1.0",
+    "buffer": "^6.0.3"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  }
+}

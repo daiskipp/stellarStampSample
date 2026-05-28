@@ -1,0 +1,10 @@
+{
+  "name": "dicekey Coffee Stamps",
+  "short_name": "dicekey Coffee",
+  "description": "Collect stamps and earn rewards at dicekey Coffee",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a1a",
+  "icons": []
+}

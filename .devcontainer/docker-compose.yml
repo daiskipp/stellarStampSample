@@ -1,0 +1,65 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: root
+    command: >
+      bash -lc "chown -R vscode:vscode
+      /home/vscode/.stampsample-devcontainer
+      /home/vscode/.npm-global
+      /home/vscode/.local
+      /home/vscode/.cargo
+      /home/vscode/.rustup
+      /home/vscode/.claude
+      /home/vscode/.config/stellar
+      && sleep infinity"
+    working_dir: /workspaces/StampSample
+    volumes:
+      - ..:/workspaces/StampSample:cached
+      - stampsample-nix-store:/nix
+      - stampsample-home-state:/home/vscode/.stampsample-devcontainer
+      - stampsample-npm-global:/home/vscode/.npm-global
+      - stampsample-local-bin:/home/vscode/.local
+      - stampsample-cargo:/home/vscode/.cargo
+      - stampsample-rustup:/home/vscode/.rustup
+      - stampsample-claude:/home/vscode/.claude
+      - stampsample-stellar-config:/home/vscode/.config/stellar
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      STAMPSHELL: devcontainer
+      STELLAR_NETWORK: stampsample-local
+      STELLAR_RPC_URL: http://stellar-localnet:8000/rpc
+      STELLAR_FRIENDBOT_URL: http://stellar-localnet:8000/friendbot
+      STELLAR_NETWORK_PASSPHRASE: Standalone Network ; February 2017
+      PLAYWRIGHT_BROWSERS_PATH: /opt/ms-playwright
+      PATH: /home/vscode/.npm-global/bin:/home/vscode/.local/bin:/home/vscode/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    depends_on:
+      - stellar-localnet
+
+  stellar-localnet:
+    image: stellar/quickstart:testing
+    # Daemon restart / unexpected crash → bring it back automatically. Manual
+    # `docker stop` is honoured; setup-stellar-localnet.sh covers that case.
+    restart: unless-stopped
+    command:
+      - --local
+      - --enable
+      - core,horizon,rpc,lab
+      - --limits
+      - testnet
+    ports:
+      - "8000:8000"
+    volumes:
+      - stampsample-stellar-data:/opt/stellar
+
+volumes:
+  stampsample-nix-store:
+  stampsample-home-state:
+  stampsample-npm-global:
+  stampsample-local-bin:
+  stampsample-cargo:
+  stampsample-rustup:
+  stampsample-claude:
+  stampsample-stellar-config:
+  stampsample-stellar-data:

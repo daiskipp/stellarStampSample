@@ -1,0 +1,12 @@
+{
+  "name": "@dicekey/sdk",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {},
+  "dependencies": {
+    "@stellar/stellar-sdk": "^15.1.0",
+    "smart-account-kit": "file:../../.oz-build/smart-account-kit"
+  }
+}

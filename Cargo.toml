@@ -1,0 +1,24 @@
+[workspace]
+resolver = "2"
+members = [
+    "contracts/shared",
+    "contracts/dicekey-visit-stamps",
+    "contracts/dicekey-beans-token",
+    "contracts/dicekey-benefits",
+    "contracts/dicekey-badges",
+    "contracts/dicekey-reward-policy",
+]
+
+[workspace.dependencies]
+soroban-sdk = "22.0.5"
+dicekey-shared = { path = "contracts/shared" }
+
+[profile.release]
+opt-level = "z"
+overflow-checks = true
+debug = 0
+strip = "symbols"
+debug-assertions = false
+panic = "abort"
+codegen-units = 1
+lto = true

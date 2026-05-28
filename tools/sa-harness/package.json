@@ -1,0 +1,19 @@
+{
+  "name": "sa-harness",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5180 --host 127.0.0.1",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@dicekey/contracts": "workspace:*",
+    "@dicekey/sdk": "workspace:*",
+    "@stellar/stellar-sdk": "^15.1.0",
+    "smart-account-kit": "file:../../.oz-build/smart-account-kit"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5"
+  }
+}

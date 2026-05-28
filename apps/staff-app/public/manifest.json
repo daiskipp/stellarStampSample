@@ -1,0 +1,10 @@
+{
+  "name": "dicekey Coffee Staff",
+  "short_name": "dicekey Staff",
+  "description": "dicekey Coffee store staff operations",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a1a1a",
+  "icons": []
+}

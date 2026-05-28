@@ -1,0 +1,27 @@
+name = "dicekey-relayer"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Origin allowlist (CSV). Update after CF Pages projects publish.
+ALLOWED_ORIGINS = "https://dicekey-customer-app.pages.dev,https://dicekey-staff-app.pages.dev"
+
+# Inner-tx target allowlist (CSV of 6 C-addresses):
+#   visit-stamps, beans-token, benefits, badges, reward-policy, HQ SA.
+# Populated from .env.testnet by `node scripts/sync-worker-allowed-contracts.mjs`.
+# Empty disables the gate (dev only) — see apps/worker/README.md.
+ALLOWED_CONTRACTS = ""
+
+RPC_URL = "https://soroban-testnet.stellar.org"
+NETWORK_PASSPHRASE = "Test SDF Network ; September 2015"
+
+# Task 009 で SequenceManager の本実装を入れる。
+# 同一スクリプト内 DO のため script_name は省略する。
+[[durable_objects.bindings]]
+name = "SEQUENCE_MANAGER"
+class_name = "SequenceManager"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["SequenceManager"]

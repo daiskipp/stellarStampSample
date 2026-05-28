@@ -1,0 +1,19 @@
+{
+  "name": "dicekey-coffee-stamps",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter './apps/*' dev",
+    "build": "pnpm --filter @dicekey/contracts build && pnpm --filter './apps/*' build",
+    "test": "pnpm --filter './packages/*' test",
+    "dev:customer": "pnpm --filter customer-app dev",
+    "dev:staff": "pnpm --filter staff-app dev",
+    "e2e:fund": "node scripts/fund-localnet.mjs",
+    "pretest:e2e": "pnpm e2e:fund",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "wrangler": "^3.114.17"
+  }
+}

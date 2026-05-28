@@ -1,0 +1,10 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tools/sa-harness"
+allowBuilds:
+  esbuild: true
+  sharp: true
+  workerd: true
+overrides:
+  smart-account-kit-bindings: "file:./.oz-build/smart-account-kit/packages/smart-account-kit-bindings"
